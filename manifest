@@ -1,0 +1,11 @@
+commands = {}
+modules = {}
+repository = {
+   ['net-toolkit'] = {
+      ['scm-1'] = {
+         {
+            arch = "rockspec"
+         }
+      }
+   }
+}
