@@ -2,6 +2,12 @@
 
 A simple module for [`Torch7`](https://github.com/torch/torch7) and the [`nn` package](https://github.com/torch/nn).
 
+## Installation
+
+```bash
+luarocks install --server=https://raw.github.com/Atcold/net-toolkit/master net-toolkit
+```
+
 ## Description
 
 This package allows to save and retrive to/from disk a lighter version of the network that is being training.
