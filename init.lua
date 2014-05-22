@@ -44,8 +44,9 @@ end
 
 -- Public functions definition -------------------------------------------------
 local function saveNet(model, fileName)
-   -- Getting rid of unnecessary things
+   -- Getting rid of unnecessary things and freeing the memory
    netLighter(model)
+   collectgarbage()
    torch.save(fileName, model)
    -- Repopulate the gradWeight through the whole net
    repopulateGradNBias(model)
