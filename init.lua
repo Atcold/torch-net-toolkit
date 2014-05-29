@@ -10,12 +10,13 @@
 
 -- Private functions definition ------------------------------------------------
 local function nilling(module)
-   module.gradBias   = nil
+   module.gradBias          = nil
    if module.finput then module.finput = torch.Tensor():typeAs(module.finput) end
-   module.gradWeight = nil
-   module.output     = torch.Tensor():typeAs(module.output)
-   module.fgradInput = nil
-   module.gradInput  = nil
+   module.gradWeight        = nil
+   module.output            = torch.Tensor():typeAs(module.output)
+   module.fgradInput        = nil
+   module.gradInput         = nil
+   module.gradWeightPartial = nil
 end
 
 local function netLighter(network)
@@ -30,6 +31,9 @@ end
 local function craftGradNBias(module)
    if module.weight then module.gradWeight = module.weight:clone() end
    if module.bias   then module.gradBias   = module.bias  :clone() end
+   if module.__typename == 'nn.SpatialConvolutionCUDA' then
+      module.gradWeightPartial = module.weight:clone()
+   end
    module.gradInput = torch.Tensor():typeAs(module.output)
 end
 
