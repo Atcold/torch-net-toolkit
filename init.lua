@@ -34,6 +34,9 @@ local function craftGradNBias(module)
    if module.__typename == 'nn.SpatialConvolutionCUDA' then
       module.gradWeightPartial = module.weight:clone()
    end
+   if module.__typename == 'nn.SpatialConvolutionMM' then
+      module.fgradInput = torch.Tensor():typeAs(module.output)
+   end
    module.gradInput = torch.Tensor():typeAs(module.output)
 end
 
