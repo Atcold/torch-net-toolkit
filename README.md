@@ -23,6 +23,16 @@ This package allows to save and retrive to/from disk a lighter version of the ne
 w, dw = saveNet(model, fileName)
 ```
 
+### `saveNetFiels()`
+
+`saveNetFields()` saves your current network, removing all `Tensor` data you don't want to save and returns a new couple of flattened *weight* and *gradients*. Usage:
+
+```lua
+w, dw = saveNetFields(model, fileName, {'weight', 'bias'})
+```
+Only `weight` and `bias` Tensors.
+
+
 ### `loadNet()`
 
 Let's say we would like to load a network we have previously saved with `saveNet()` for continuing a training session on it. Some inner parameters (something about *gradients*) have to be restored, since `saveNet()` did a pruning operation on the network in order to save space. Here is how we can handle this case:
