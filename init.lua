@@ -28,6 +28,23 @@ local function netLighter(network)
    end
 end
 
+local function nillingFields(module, fields)
+   for key, val in pairs(module) do
+      if (string.match(torch.typename(val) or '', 'Tensor') and not fields[key]) then
+         module[key] = torch.Tensor():typeAs(val)
+      end
+   end
+end
+
+local function netFieldsLighter(network, fields)
+   nillingFields(network, fields)
+   if network.modules then
+      for _,a in ipairs(network.modules) do
+         netFieldsLighter(a, fields)
+      end
+   end
+end
+
 local function craftGradNBias(module)
    if module.weight then module.gradWeight = module.weight:clone() end
    if module.bias   then module.gradBias   = module.bias  :clone() end
@@ -61,6 +78,20 @@ local function saveNet(model, fileName)
    return model:getParameters()
 end
 
+local function saveNetFields(fileName, model, fields)
+   local my_fields = {['modules'] = true}
+   for _, val in pairs(fields) do
+      my_fields[val] = true
+   end
+   netFieldsLighter(model, my_fields)
+   collectgarbage()
+   torch.save(fileName, model)
+   repopulateGradNBias(model)
+
+   return model:getParameters()
+end
+
+
 local function loadNet(fileName)
    local model = torch.load(fileName)
    -- Repopulate the gradWeight through the whole net
@@ -71,6 +102,7 @@ end
 -- Selecting public functions --------------------------------------------------
 netToolkit = {
    saveNet = saveNet,
+   saveNetFields = saveNetFields,
    loadNet = loadNet
 }
 
