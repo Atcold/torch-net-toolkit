@@ -9,26 +9,7 @@
 --------------------------------------------------------------------------------
 
 -- Private functions definition ------------------------------------------------
-local function nilling(module)
-   module.gradBias          = nil
-   if module.finput then module.finput = torch.Tensor():typeAs(module.finput) end
-   module.gradWeight        = nil
-   module.output            = torch.Tensor():typeAs(module.output)
-   module.fgradInput        = nil
-   module.gradInput         = nil
-   module.gradWeightPartial = nil
-end
-
-local function netLighter(network)
-   nilling(network)
-   if network.modules then
-      for _,a in ipairs(network.modules) do
-         netLighter(a)
-      end
-   end
-end
-
-local function nillingFields(module, fields)
+local function nilling(module, fields)
    for key, val in pairs(module) do
       if string.match(torch.typename(val) or '', 'Tensor') and not fields[key] then
          module[key] = torch.Tensor():typeAs(val)
@@ -36,11 +17,11 @@ local function nillingFields(module, fields)
    end
 end
 
-local function netFieldsLighter(network, fields)
-   nillingFields(network, fields)
+local function netLighter(network, fields)
+   nilling(network, fields)
    if network.modules then
       for _,a in ipairs(network.modules) do
-         netFieldsLighter(a, fields)
+         netLighter(a, fields)
       end
    end
 end
@@ -67,26 +48,22 @@ local function repopulateGradNBias(network)
 end
 
 -- Public functions definition -------------------------------------------------
-local function saveNet(model, fileName)
+local function saveNet(fileName, model)
+   return saveNetFields(fileName, model, {'weight', 'bias'})
+end
+
+local function saveNetFields(fileName, model, fields)
+   -- Reverse dictionary
+   for _, val in pairs(fields) do
+      keepFields[val] = true
+   end
    -- Getting rid of unnecessary things and freeing the memory
-   netLighter(model)
+   netLighter(model, keepFields)
    collectgarbage()
    torch.save(fileName, model)
    -- Repopulate the gradWeight through the whole net
    repopulateGradNBias(model)
    -- Return NEW storage for <weight> and <grad>
-   return model:getParameters()
-end
-
-local function saveNetFields(fileName, model, fields)
-   local keepFields = {['modules'] = true}
-   for _, val in pairs(fields) do
-      keepFields[val] = true
-   end
-   netFieldsLighter(model, keepFields)
-   collectgarbage()
-   torch.save(fileName, model)
-   repopulateGradNBias(model)
    return model:getParameters()
 end
 
