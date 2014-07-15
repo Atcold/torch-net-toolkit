@@ -48,12 +48,8 @@ local function repopulateGradNBias(network)
 end
 
 -- Public functions definition -------------------------------------------------
-local function saveNet(fileName, model)
-   return saveNetFields(fileName, model, {'weight', 'bias'})
-end
-
 local function saveNetFields(fileName, model, fields)
-   -- Reverse dictionary
+   local keepFields = {}
    for _, val in pairs(fields) do
       keepFields[val] = true
    end
@@ -65,6 +61,10 @@ local function saveNetFields(fileName, model, fields)
    repopulateGradNBias(model)
    -- Return NEW storage for <weight> and <grad>
    return model:getParameters()
+end
+
+local function saveNet(fileName, model)
+   return saveNetFields(fileName, model, {'weight', 'bias'})
 end
 
 local function loadNet(fileName)
