@@ -10,14 +10,15 @@ luarocks install --server=https://raw.github.com/Atcold/net-toolkit/master net-t
 
 ## Description
 
-This package allows to save and retrive to/from disk a lighter version of the network that is being training.
+The package `net-toolkit` allows to save and retrive to/from disk a lighter version of the network that is being training. After `require('net-toolkit')`, you will have the following functions at your disposal:
 
- - [`saveNet()`](#savenet)
- - [`loadNet()`](#loadnet)
+ - [`netToolkit.saveNet()`](#savenet)
+ - [`netToolkit.saveNetFields()`](#savenetfields)
+ - [`netToolkit.loadNet()`](#loadnet)
 
 ### `saveNet()`
 
-`saveNet()` saves a lighter version of your current network, removing all unnecessary data from it (such as *gradients*, *activation units*' state and etc...) and returns a new couple of flattened *weight* and *gradients*. Usage:
+`saveNet()` saves a lighter version of your current network, removing all unnecessary data from it (such as *gradients*, *activation units*' state and etc...) and returns a new couple of flattened *weights* and *gradients*. Usage:
 
 ```lua
 w, dw = saveNet(model, fileName)
@@ -25,12 +26,17 @@ w, dw = saveNet(model, fileName)
 
 ### `saveNetFields()`
 
-`saveNetFields()` saves your current network, removing all `Tensor` data you don't want to save and returns a new couple of flattened *weight* and *gradients*. Usage:
+`saveNetFields()` saves your current network, removing all `Tensor` data you don't want to save and returns a new couple of flattened *weights* and *gradients*. Usage:
 
 ```lua
 w, dw = saveNetFields(model, fileName, {'weight', 'bias'})
 ```
-Only `weight` and `bias` `Tensor`s will be saved and the rest will be discarded.
+
+In this case, only `weight` and `bias` `Tensor`s will be saved while the rest will be discarded. (The function `saveNet()` is, therefore, a shortcut to this specific usage of `saveNetFields()`.) However, we could have saved also `gradWeight` and `gradBias` by doing:
+
+```lua
+w, dw = saveNetFields(model, fileName, {'weight', 'bias', 'gradWeight', 'gradBias'})
+```
 
 ### `loadNet()`
 
