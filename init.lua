@@ -48,7 +48,7 @@ local function repopulateGradNBias(network)
 end
 
 -- Public functions definition -------------------------------------------------
-local function saveNetFields(fileName, model, fields)
+local function saveNetFields(fileName, model, fields, format)
    -- Reverse dictionary
    local keepFields = {}
    for _, val in pairs(fields) do
@@ -57,19 +57,21 @@ local function saveNetFields(fileName, model, fields)
    -- Getting rid of unnecessary things and freeing the memory
    netLighter(model, keepFields)
    collectgarbage()
-   torch.save(fileName, model)
+   fileName = format == 'ascii' and fileName .. '.ascii' or fileName
+   torch.save(fileName, model, format)
    -- Repopulate the gradWeight through the whole net
    repopulateGradNBias(model)
    -- Return NEW storage for <weight> and <grad>
    return model:getParameters()
 end
 
-local function saveNet(fileName, model)
-   return saveNetFields(fileName, model, {'weight', 'bias'})
+local function saveNet(fileName, model, format)
+   return saveNetFields(fileName, model, {'weight', 'bias'}, format)
 end
 
-local function loadNet(fileName)
-   local model = torch.load(fileName)
+local function loadNet(fileName, format)
+   fileName = format == 'ascii' and fileName .. '.ascii' or fileName
+   local model = torch.load(fileName, format)
    -- Repopulate the gradWeight through the whole net
    repopulateGradNBias(model)
    return model, model:getParameters()
