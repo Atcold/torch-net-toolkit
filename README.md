@@ -21,13 +21,13 @@ The package `net-toolkit` allows to save and retrive to/from disk a lighter vers
 `saveNet()` saves a lighter version of your current network, removing all unnecessary data from it (such as *gradients*, *activation units*' state and etc...) and returns a new couple of flattened *weights* and *gradients*. Usage:
 
 ```lua
-w, dw = saveNet(model, fileName)
+w, dw = saveNet(fileName, model)
 ```
 
 If you want to save the model in `ascii` format, call `saveNet()` as shown below. The output file will have an `.ascii` extension appended to `fileName`.
 
 ```lua
-w, dw = saveNet(model, fileName, 'ascii')
+w, dw = saveNet(fileName, model, 'ascii')
 ```
 
 ### `saveNetFields()`
@@ -35,13 +35,13 @@ w, dw = saveNet(model, fileName, 'ascii')
 `saveNetFields()` saves your current network, removing all `Tensor` data you don't want to save and returns a new couple of flattened *weights* and *gradients*. (Set `format` to `'ascii'` for saving in `ascii` format.) Usage:
 
 ```lua
-w, dw = saveNetFields(model, fileName, {'weight', 'bias'}, format)
+w, dw = saveNetFields(fileName, model, {'weight', 'bias'}, format)
 ```
 
 In this case, only `weight` and `bias` `Tensor`s will be saved while the rest will be discarded. (The function `saveNet()` is, therefore, a shortcut to this specific usage of `saveNetFields()`.) However, we could have saved also `gradWeight` and `gradBias` by doing:
 
 ```lua
-w, dw = saveNetFields(model, fileName, {'weight', 'bias', 'gradWeight', 'gradBias'}, format)
+w, dw = saveNetFields(fileName, model, {'weight', 'bias', 'gradWeight', 'gradBias'}, format)
 ```
 
 ### `loadNet()`
